@@ -4,7 +4,8 @@ const serverToggle = require('../lib/server-toggle');
 const server = require('../index');
 
 const request = require('superagent');
-const URL = 'http://localhost:' + process.env.PORT + '/';
+const PORT = process.env.PORT || 3000;
+const URL = 'http://localhost:' + PORT + '/';
 
 
 describe('Server Responses', () => {
