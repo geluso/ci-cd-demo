@@ -2,8 +2,19 @@ require('dotenv').config();
 
 const request = require('superagent');
 const URL = 'http://localhost:' + process.env.PORT + '/';
+const server = require('../index');
 
 describe('Server Responses', () => {
+  beforeAll(done => {
+    server.start()
+    .then(done)
+  });
+
+  afterAll(done => {
+    server.stop()
+    .then(done)
+  });
+
   it('should return 200 for root', (done) => {
     request.get(URL)
     .end((err, res) => {

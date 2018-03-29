@@ -61,7 +61,37 @@ app.get('/secret', (req, res) => {
 //   });
 // })
 //
+
 const PORT = process.env.PORT;
-app.listen(PORT, () => {
-  console.log('http://localhost:' + PORT);
-});
+let server = undefined;
+
+function startServer() {
+  console.log('starting');
+  return new Promise((resolve, reject) => {
+    if (app.isRunning) {
+      resolve();
+    } else {
+      app.isRunning = true;
+      server = app.listen(PORT, () => {
+        console.log('started http://localhost:' + PORT);
+        resolve();
+      });
+    }
+  });
+}
+
+function stopServer() {
+  console.log('stopping');
+  return new Promise((resolve, reject) => {
+    server.close(err => {
+      app.isRunning = false;
+      console.log('closing http://localhost:' + PORT);
+      //mongoose.connection.close();
+      resolve();
+    });
+  });
+}
+
+startServer();
+
+module.exports = {start: startServer, stop: stopServer};
