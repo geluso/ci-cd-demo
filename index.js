@@ -4,8 +4,11 @@ const express = require('express');
 const app = express();
 
 // connect MongoDB to MLabs after simpler proven deployment
-// const mongoose = require('mongoose');
-// mongoose.connect(process.env.MONGODB_URI);
+const mongoose = require('mongoose');
+mongoose.connect(process.env.MONGODB_URI);
+
+const User = require('./models/user');
+
 const USERNAME = 'admin';
 const PASSWORD = 'opensesame';
 
@@ -27,14 +30,29 @@ app.get('/secret', (req, res) => {
   let [username, password] = decoded.split(':');
 
   console.log('username/password:', username, password);
-  if (username === USERNAME && password === PASSWORD) {
-    res.send('Secret Recipe.');
-  } else {
-    res.send('Incorrect username or password.');
-  }
+  User.findOne({username: username})
+  .then(user => {
+    console.log('found user:', user);
+    if (username === user.username && password === user.passwordHash) {
+      res.send('Secret Recipe.');
+    } else {
+      res.send('Incorrect username or password.');
+    }
+  });
 });
 
-const PORT = process.env.PORT;
-app.listen(PORT, () => {
-  console.log('http://localhost:' + PORT);
-});
+User.remove()
+.then(() => {
+  let admin = new User({
+    username: USERNAME,
+    email: 'admin@admin.com',
+    passwordHash: PASSWORD
+  });
+  return admin.save();
+})
+.then(() => {
+  const PORT = process.env.PORT;
+  app.listen(PORT, () => {
+    console.log('http://localhost:' + PORT);
+  });
+})
