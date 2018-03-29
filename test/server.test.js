@@ -1,18 +1,19 @@
 require('dotenv').config();
 
+const serverToggle = require('../lib/server-toggle');
+const server = require('../index');
+
 const request = require('superagent');
 const URL = 'http://localhost:' + process.env.PORT + '/';
-const server = require('../index');
+
 
 describe('Server Responses', () => {
   beforeAll(done => {
-    server.start()
-    .then(done)
+    serverToggle.serverOn(server, done);
   });
 
   afterAll(done => {
-    server.stop()
-    .then(done)
+    serverToggle.serverOff(server, done);
   });
 
   it('should return 200 for root', (done) => {
