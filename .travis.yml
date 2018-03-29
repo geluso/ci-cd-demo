@@ -3,5 +3,4 @@ node_js:
   - 'stable'
 before_script: npm i
 script:
-  - node index.js
   - npm test
